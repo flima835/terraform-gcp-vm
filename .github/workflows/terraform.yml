@@ -1,0 +1,28 @@
+name: Terraform Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+
+      - name: Authenticate to GCP
+        run: echo '${{ secrets.GCP_CREDENTIALS }}' > gcp-key.json
+
+      - name: Set Credentials
+        run: echo "GOOGLE_APPLICATION_CREDENTIALS=gcp-key.json" >> $GITHUB_ENV
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
